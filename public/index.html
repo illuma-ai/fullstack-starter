@@ -1,51 +1,64 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Starter App</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
-          }
-        }
-      }
-    }
-  </script>
-  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@remix-run/router@1.21.0/dist/router.umd.min.js"></script>
-  <script src="https://unpkg.com/react-router@6.28.0/dist/umd/react-router.production.min.js"></script>
-  <script src="https://unpkg.com/react-router-dom@6.28.0/dist/umd/react-router-dom.production.min.js"></script>
-  <link rel="stylesheet" href="/styles.css">
-</head>
-<body class="bg-gray-50 min-h-screen antialiased">
-  <div id="root"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Starter App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#eff6ff",
+                100: "#dbeafe",
+                200: "#bfdbfe",
+                300: "#93c5fd",
+                400: "#60a5fa",
+                500: "#3b82f6",
+                600: "#2563eb",
+                700: "#1d4ed8",
+                800: "#1e40af",
+                900: "#1e3a8a",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@remix-run/router@1.21.0/dist/router.umd.min.js"></script>
+    <script src="https://unpkg.com/react-router@6.28.0/dist/umd/react-router.production.min.js"></script>
+    <script src="https://unpkg.com/react-router-dom@6.28.0/dist/umd/react-router-dom.production.min.js"></script>
+    <script src="https://unpkg.com/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="bg-gray-50 min-h-screen antialiased">
+    <div id="root"></div>
 
-  <!-- Lib -->
-  <script src="/lib/api.js"></script>
+    <!-- Lib -->
+    <script src="/lib/api.js"></script>
 
-  <!-- Store -->
-  <script src="/store/AuthContext.js"></script>
-  <script src="/store/AppContext.js"></script>
+    <!-- Store -->
+    <script src="/store/AuthContext.js"></script>
+    <script src="/store/AppContext.js"></script>
 
-  <!-- Components -->
-  <script src="/components/Toast.js"></script>
-  <script src="/components/Navbar.js"></script>
-  <script src="/components/ItemCard.js"></script>
-  <script src="/components/ItemForm.js"></script>
+    <!-- Components -->
+    <script src="/components/Toast.js"></script>
+    <script src="/components/Navbar.js"></script>
+    <script src="/components/ItemCard.js"></script>
+    <script src="/components/ItemForm.js"></script>
+    <script src="/components/StatsChart.js"></script>
 
-  <!-- Pages -->
-  <script src="/pages/WelcomePage.js"></script>
-  <script src="/pages/LoginPage.js"></script>
-  <script src="/pages/RegisterPage.js"></script>
-  <script src="/pages/DashboardPage.js"></script>
+    <!-- Pages -->
+    <script src="/pages/WelcomePage.js"></script>
+    <script src="/pages/LoginPage.js"></script>
+    <script src="/pages/RegisterPage.js"></script>
+    <script src="/pages/DashboardPage.js"></script>
 
-  <!-- App (must be last) -->
-  <script src="/App.js"></script>
-</body>
+    <!-- App (must be last) -->
+    <script src="/App.js"></script>
+  </body>
 </html>
