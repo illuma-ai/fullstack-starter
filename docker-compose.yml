@@ -1,0 +1,51 @@
+# docker-compose.yml — Local development and production deployment
+#
+# Usage:
+#   SQLite (default):    docker compose up
+#   With Postgres:       docker compose --profile postgres up
+#
+# The app works identically with both — swap DATABASE_URL and restart.
+
+services:
+  app:
+    build: .
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=3000
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-24h}
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:/app/data/app.db}
+    volumes:
+      - app-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: wget -qO- http://localhost:3000/api/health || exit 1
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+  # --- Optional: Postgres (activate with --profile postgres) ----------------
+  postgres:
+    image: postgres:16-alpine
+    profiles: [postgres]
+    environment:
+      POSTGRES_DB: starter_app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U app -d starter_app
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  app-data:
+  pg-data:

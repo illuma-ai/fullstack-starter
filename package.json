@@ -1,0 +1,9 @@
+{
+  "name": "starter-app",
+  "version": "1.0.0",
+  "description": "Full-stack Express + React starter with SQLite (sql.js)",
+  "dependencies": {
+    "express": "^4.18.0",
+    "sql.js": "^1.11.0"
+  }
+}

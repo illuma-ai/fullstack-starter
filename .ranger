@@ -1,0 +1,135 @@
+# .ranger — Project Manifest
+# This file provides context to the Ranger AI agent about project structure,
+# conventions, and schemas. Update this file when you add new files, routes,
+# or database tables.
+
+## Project Type
+type: fullstack-express-react
+runtime: nodepod (browser-based Node.js)
+database: sql.js (SQLite WASM — Postgres-compatible schemas)
+frontend: React 18 (CDN) + React Router v6 + React Context
+styling: Tailwind CSS (CDN)
+
+## File Structure
+```
+├── server.js                  # Express entry point — middleware chain, server start
+├── config.js                  # Environment config — reads process.env with defaults
+├── .env.example               # Environment variable documentation
+├── package.json               # Dependencies (express, sql.js)
+├── Dockerfile                 # Multi-stage production Docker build
+├── docker-compose.yml         # Local dev + optional Postgres profile
+├── .dockerignore              # Docker build exclusions
+├── README.md                  # Project docs, API reference, deploy guide
+├── CONTRIBUTING.md            # Contribution guidelines, adding resources
+│
+├── db/
+│   ├── database.js            # sql.js initialization, migration runner, query helpers
+│   └── migrations/
+│       └── 001_initial.js     # Initial schema — users, items tables
+│
+├── db/repositories/
+│   ├── userRepository.js      # User CRUD — findById, findByEmail, create, update
+│   └── itemRepository.js      # Item CRUD — findAll, findById, create, update, delete, stats
+│
+├── middleware/
+│   ├── auth.js                # JWT auth — generateToken, authenticate, requireRole
+│   ├── errorHandler.js        # Global error handler + 404 with SPA fallback
+│   ├── staticFiles.js         # Static file serving (fs.readFileSync for Nodepod)
+│   └── validate.js            # Request body validation helpers
+│
+├── routes/
+│   ├── auth.js                # POST /api/auth/register, POST /api/auth/login, GET /api/auth/me
+│   └── items.js               # GET/POST /api/items, GET/PUT/DELETE /api/items/:id, GET /api/items/stats
+│
+├── public/
+│   ├── index.html             # HTML shell — loads React, Router, Tailwind from CDN
+│   ├── styles.css             # Custom CSS animations
+│   │
+│   ├── lib/
+│   │   └── api.js             # API client — fetch wrapper with auth token handling
+│   │
+│   ├── store/
+│   │   ├── AuthContext.js     # Auth state — user, token, login/logout/register actions
+│   │   └── AppContext.js      # App state — items, loading, filters, CRUD actions
+│   │
+│   ├── pages/
+│   │   ├── WelcomePage.js     # Landing page — hero, features, architecture overview
+│   │   ├── LoginPage.js       # Login form with demo credentials
+│   │   ├── RegisterPage.js    # Registration form
+│   │   └── DashboardPage.js   # Main app — stats, items list, create/edit/delete
+│   │
+│   ├── components/
+│   │   ├── Navbar.js          # Top nav — logo, nav links, auth status
+│   │   ├── Toast.js           # Notification toasts
+│   │   ├── ItemCard.js        # Item display with status/priority badges
+│   │   └── ItemForm.js        # Create/edit item form with validation
+│   │
+│   └── App.js                 # Root — providers, router, route definitions
+```
+
+## Database Schema
+
+### users
+| Column     | Type      | Constraints                    | Notes                    |
+|------------|-----------|-------------------------------|--------------------------|
+| id         | INTEGER   | PRIMARY KEY AUTOINCREMENT     | Maps to SERIAL in Postgres |
+| email      | TEXT      | UNIQUE NOT NULL               |                          |
+| password   | TEXT      | NOT NULL                      | Hashed (base64 in sandbox) |
+| name       | TEXT      | NOT NULL                      |                          |
+| role       | TEXT      | NOT NULL DEFAULT 'user'       | 'admin' or 'user'       |
+| created_at | TEXT      | DEFAULT CURRENT_TIMESTAMP     | ISO 8601 string          |
+
+### items
+| Column      | Type      | Constraints                    | Notes                    |
+|-------------|-----------|-------------------------------|--------------------------|
+| id          | INTEGER   | PRIMARY KEY AUTOINCREMENT     | Maps to SERIAL in Postgres |
+| title       | TEXT      | NOT NULL                      |                          |
+| description | TEXT      |                               |                          |
+| status      | TEXT      | NOT NULL DEFAULT 'todo'       | 'todo', 'in_progress', 'done' |
+| priority    | TEXT      | NOT NULL DEFAULT 'medium'     | 'low', 'medium', 'high' |
+| user_id     | INTEGER   | REFERENCES users(id)          | Foreign key              |
+| created_at  | TEXT      | DEFAULT CURRENT_TIMESTAMP     |                          |
+| updated_at  | TEXT      | DEFAULT CURRENT_TIMESTAMP     |                          |
+
+## API Routes
+
+### Health
+| Method | Path                | Auth     | Body                              | Response              |
+|--------|---------------------|----------|-----------------------------------|-----------------------|
+| GET    | /api/health         | None     | —                                 | { status, uptime }    |
+
+### Authentication
+| Method | Path                | Auth     | Body                              | Response              |
+|--------|---------------------|----------|-----------------------------------|-----------------------|
+| POST   | /api/auth/register  | None     | { email, password, name }         | { user, token }       |
+| POST   | /api/auth/login     | None     | { email, password }               | { user, token }       |
+| GET    | /api/auth/me        | Required | —                                 | { user }              |
+
+### Items
+| Method | Path                | Auth     | Body                              | Response              |
+|--------|---------------------|----------|-----------------------------------|-----------------------|
+| GET    | /api/items          | Required | —                                 | { items: [...] }      |
+| POST   | /api/items          | Required | { title, description?, status?, priority? } | { item }     |
+| GET    | /api/items/stats    | Required | —                                 | { total, byStatus, byPriority } |
+| GET    | /api/items/:id      | Required | —                                 | { item }              |
+| PUT    | /api/items/:id      | Required | { title?, description?, status?, priority? } | { item }    |
+| DELETE | /api/items/:id      | Required | —                                 | { message }           |
+
+## Coding Conventions
+- Backend: CommonJS (require/module.exports), ES5-compatible for Nodepod
+- Frontend: React.createElement (aliased as 'h'), no JSX — loaded from CDN
+- React Router: ReactRouterDOM global, v6 API (Routes, Route, Link, Outlet, useParams, useNavigate)
+- State: React Context with useReducer for complex state, useState for simple
+- API calls: Use /public/lib/api.js client — handles auth headers, JSON parsing, errors
+- SQL: Use parameterized queries (?) — never string interpolation
+- Error handling: All async route handlers wrapped in try/catch, errors forwarded to errorHandler
+- Validation: Use middleware/validate.js for request body validation
+
+## Postgres Migration Guide
+To deploy to production with Postgres:
+1. Replace db/database.js: use 'pg' Pool instead of sql.js
+2. Update query syntax: ? params → $1, $2 (Postgres style)
+3. Replace INTEGER PRIMARY KEY AUTOINCREMENT → SERIAL PRIMARY KEY
+4. Replace TEXT for timestamps → TIMESTAMP WITH TIME ZONE
+5. Add connection pooling config to config.js
+6. Everything else (repos, routes, middleware) stays the same
